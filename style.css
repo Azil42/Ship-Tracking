@@ -1,0 +1,531 @@
+/* Mengatur tinggi dan lebar halaman agar menggunakan 100% tampilan */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden; /* Mencegah scroll */
+  font-family: Arial, sans-serif;
+}
+
+/* Mengatur tinggi container agar sesuai dengan ukuran layar */
+.container {
+  position: relative;
+  width: 100%;
+  height: 50px;
+  background-color: #000000;
+  border-bottom: 1px solid #000000;
+  z-index: 1000; /* Tambah z-index supaya navbar di atas peta */
+}
+
+/* Style navbar dengan lebar yang menyempit */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 60px; /* Awalnya hanya tampil selebar ikon */
+  height: 100%;
+  background-color: #000000;
+  border-right: 7px solid #ff009d;
+  transition: width 0.3s ease; /* Animasi saat melebar */
+  z-index: 1000;
+}
+
+/* Hover area untuk memunculkan navbar */
+.hover-area {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 100%;
+  z-index: 999; /* Agar berada di atas peta */
+}
+
+/* Ketika di-hover, navbar akan melebar */
+.navbar:hover {
+  width: 200px;
+}
+
+/* Style untuk item dalam navbar */
+.navbar ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.navbar ul li {
+  padding: 15px;
+  display: flex;
+  align-items: center; /* Pusatkan konten secara vertikal */
+}
+
+.navbar ul li a {
+  color: white;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.navbar ul li a .menu-icon {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+}
+
+.menu-text {
+  display: none; /* Awalnya sembunyikan teks menu */
+}
+
+.dropdown-filter, .weather-legend, .stats-section {
+  display: none;
+}
+
+/* Styling untuk logo pojok atas*/
+
+.menu-item1 {
+  position: relative;
+  cursor: default;   /* Menunjukkan bahwa ini tidak bisa diklik */
+}
+
+.menu-icon1 {
+  position: absolute;
+  top: 15px;
+  left: 0;
+  width: 60px;
+  height: 60px;
+}
+
+/* Sembunyikan teks secara default */
+.menu-text1 {
+  font-size: 25px;
+  color: white;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  text-align: center;
+  pointer-events: none; /* Nonaktifkan interaksi klik */
+  position: absolute;   /* Posisi absolut, supaya bisa dipindahkan di mana saja */
+  top: 15px;
+  left: 0;
+  opacity: 0;           /* Awalnya tidak terlihat */
+}
+
+/* Saat kursor diarahkan ke item, teks akan muncul */
+.menu-item1:hover .menu-text1 {
+  opacity: 1;           /* Munculkan teks saat hover */
+}
+
+/* Ketika navbar di-hover, hilangkan logo */
+.navbar:hover .menu-icon1 {
+  opacity: 0;  /* Logo menghilang saat hover ke navbar */
+}
+
+/* Pastikan ikon dan teks berada di posisi yang berbeda setelah logo menghilang */
+.navbar:hover .menu-text1 {
+  display: inline;
+  top: 25px;   /* Atur posisi teks menjadi lebih ke atas atau di mana saja */
+  left: 18px;  /* Misalnya di tepi kiri atas */
+  transform: translate(0, 0);  /* Reset pemosisian */
+  opacity: 1;  /* Teks menjadi terlihat */
+}
+
+
+.navbar:hover .menu-text {
+  display: inline; /* Tampilkan teks saat di-hover */
+}
+
+.navbar ul li a:hover {
+  background-color: #5c5a5b;
+}
+
+/* opsi filter kapal */
+.filter-item {
+  position: relative;
+}
+
+#dropdown-filter {
+  display: none; /* Hidden by default */
+  position: absolute;
+  top: 0;
+  left: 100%; /* Aligns dropdown to the right side of the button */
+  margin-left: 10px; /* Adds a small space between button and dropdown */
+  background-color: #333;
+  color: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  width: 220px; /* Adjusted width for consistent size */
+  z-index: 10;
+}
+
+.dropdown-menu {
+  display: none;
+}
+
+.dropdown-menu.active {
+  display: block;
+}
+
+.dropdown-filter label {
+  font-size: 14px;
+  margin-bottom: 5px;
+  display: block;
+  color: #fff; /* White text color for visibility */
+}
+
+.dropdown-filter input,
+.dropdown-filter select {
+  width: 100%; /* Full width for consistency */
+  padding: 8px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  box-sizing: border-box; /* Ensures padding doesn't affect width */
+}
+
+.dropdown-filter button {
+  background-color: #ff009d;
+  color: #fff;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+  font-weight: bold;
+}
+
+.dropdown-filter button:hover {
+  background-color: #b3006e;
+}
+
+/* Mengatur search bar agar muncul di bagian atas */
+.search-container {
+  position: absolute;
+  top: 17px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000; /* Agar search bar muncul di atas peta */
+  background-color: white;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
+}
+
+#search-bar {
+  padding: 5px;
+  width: 200px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+#search-btn {
+  padding: 5px 10px;
+  background-color: #ff009d;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+#search-btn:hover {
+  background-color: #ff009d;
+}
+
+.weather-legend {
+  display: none; /* Default tidak tampil */
+  position: absolute;
+  top: 0;
+  left: 100%; /* Posisikan di sebelah kanan tombol */
+  margin-left: 10px; /* Tambahkan jarak */
+  background-color: #333;
+  padding: 15px; /* Padding lebih besar untuk ruang tambahan */
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  color: white;
+  width: 220px; /* Lebar yang konsisten */
+  z-index: 10;
+}
+
+.weather-legend h4 {
+  margin: 0 0 10px 0; /* Margin bawah untuk memberi jarak */
+  font-size: 16px;
+  text-align: center;
+}
+
+.weather-legend label {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.weather-legend label input[type="checkbox"] {
+  margin-right: 10px; /* Jarak antara checkbox dan teks */
+  transform: scale(1.2); /* Perbesar checkbox */
+}
+
+.weather-legend input[type="checkbox"] {
+  width: 18px; /* Ukuran checkbox lebih besar */
+  height: 18px;
+}
+
+#color-scale-container {
+  position: absolute;
+  bottom: 10px; /* Jarak dari bawah layar */
+  right: 10px; /* Jarak dari kanan layar */
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  z-index: 1000; /* Memastikan elemen ini di atas layer peta */
+}
+
+#color-scale-container h4 {
+  margin: 0 0 10px 0; /* Margin bawah untuk memberi jarak */
+  font-size: 16px;
+  text-align: center;
+}
+
+.color-scale {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.color-scale span {
+  font-size: 12px;
+  margin: 0 5px;
+}
+
+.color-bar {
+  width: 100px;
+  height: 10px;
+  border: 1px solid #ccc;
+  margin: 0 5px;
+  border-radius: 5px;
+}
+/* Gradien Warna untuk Wind: Biru (lemah) -> Hijau -> Merah (kuat) */
+.color-bar.wind {
+  background: linear-gradient(to right, blue, lightgreen, yellow, red);
+}
+
+/* Gradien Warna untuk Temperature: Biru Gelap (dingin) -> Hijau -> Kuning -> Merah (panas) */
+.color-bar.temperature {
+  background: linear-gradient(to right, darkblue, lightblue, green, yellow, red);
+}
+
+/* Gradien Warna untuk Precipitation: Biru Muda (ringan) -> Biru -> Biru Tua (berat) */
+.color-bar.rain {
+  background: linear-gradient(to right, lightblue, blue, darkblue);
+}
+
+/* Gaya untuk ikon jenis kapal */
+.ship-type-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+#dropdown-ship-types {
+  display: none;
+  position: absolute;
+  max-height: 350px; /* Batas tinggi dropdown */
+  overflow-y: auto; /* Tambahkan scroll jika konten melebihi batas */
+  top: 0;
+  left: 100%;
+  margin-left: 10px;
+  background-color: #333;
+  color: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  width: 200px;
+  z-index: 10;
+}
+
+.tab-indent {
+  margin-left: 20px; /* Alternatif untuk padding */
+}
+
+#dropdown-ship-types h4 {
+  margin: 0 0 10px 0; /* Margin bawah untuk memberi jarak */
+  font-size: 16px;
+  text-align: center;
+}
+
+#dropdown-ship-types ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+#dropdown-ship-types li {
+  padding: 8px 0;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+#dropdown-ship-types li:hover {
+  background-color: #ff009d;
+}
+
+.dropdown-ship-types h4 {
+  margin: 0 0 10px 0; /* Margin bawah untuk memberi jarak */
+  font-size: 16px;
+  text-align: center;
+}
+
+details {
+  margin-bottom: 10px;
+}
+
+details summary {
+  display: flex;
+  align-items: center; /* Menjaga semua elemen sejajar secara vertikal */
+  list-style: none;
+  padding: 8px 0; /* Konsistensi jarak vertikal */
+  cursor: pointer;
+}
+
+details summary:before {
+  content: "▼"; /* Simbol panah menggantikan ikon kapal */
+  font-size: 24px; /* Sesuaikan ukuran simbol panah */
+  margin-right: 8px; /* Jarak antara panah dan teks */
+}
+
+details[open] summary:before {
+  content: "▲"; /* Simbol panah saat elemen terbuka */
+}
+
+details summary span {
+  font-size: 16px; /* Ukuran teks Kapal Global */
+}
+
+/* untuk statistik kapal */
+#stats-section {
+  display: none; /* Tersembunyi secara default */
+  position: absolute;
+  top: 0;
+  left: 100%; /* Sejajarkan dropdown ke kanan tombol */
+  margin-left: 10px;
+  background-color: #333;
+  color: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  width: 220px; /* Lebar tetap */
+  z-index: 10;
+}
+
+#stats-section h4 {
+  margin-bottom: 10px;
+  color: #fff;
+  font-size: 16px; /* Sesuaikan ukuran font */
+  margin: 0 0 10px 0; /* Margin bawah untuk memberi jarak */
+  font-size: 16px;
+  text-align: center;
+}
+
+#stats-section p {
+  font-size: 14px;
+  margin: 8px 0;
+}
+
+/* untuk jarak kapal */
+#distance-btn {
+  color: white;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+#distance-btn .menu-icon {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+}
+
+.menu-text {
+  display: none;
+}
+
+/* Saat navbar di-hover, tampilkan teks */
+.navbar:hover .menu-text {
+  display: inline;
+}
+
+.custom-ship-icon {
+  display: inline-block;
+  transform-origin: center; /* Titik rotasi di tengah */
+}
+
+.leaflet-marker-icon {
+  image-rendering: auto;
+}
+
+/*tambahan baru*/
+        /* Gaya untuk Select2 */
+        .select2-container {
+            width: 100% !important;
+            margin-bottom: 0;
+        }
+        
+        .select2-container--default .select2-selection--single {
+            background-color: #444;
+            border: 1px solid #555;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: Arial, sans-serif;
+            height: 36px;
+        }
+        
+        .select2-container--default .select2-results__option {
+          font-size: 12px !important;  /* Ukuran font kecil */
+          padding: 6px 12px !important;  /* Padding atas-bawah 6px, kiri-kanan 12px */
+          line-height: 1.5;
+          font-family: Arial, sans-serif;
+        }
+
+        .select2-container--default .select2-results__group {
+          padding: 8px 12px;  /* Padding grup */
+          font-size: 12px;    /* Ukuran font grup lebih kecil */
+          font-weight: normal;
+          font-family: Arial, sans-serif;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: white;
+            line-height: 32px;
+            font-size: 12px;
+            font-family: Arial, sans-serif;
+        }
+        
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 36px;
+        }
+        
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: #ff009d;
+        }
+        
+        /* Gaya untuk ikon */
+        .option-with-icon {
+            display: flex;
+            align-items: center;
+        }
+        
+        .option-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 10px;
+            object-fit: contain;
+        }
+
+        select optgroup {
+          font-weight: normal;
+        }
+
+/* Mengatur map agar memenuhi seluruh layar */
+#map {
+  width: 100%;
+  height: calc(100vh - 50px); /* Peta mengisi sisa layar di bawah navbar */
+  z-index: 1; /* Pastikan peta di belakang elemen lain */
+}

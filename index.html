@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ship Tracking</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="leaflet.css">
+    <link rel="stylesheet" href="leafletdraw.css">
+</head>
+<body>
+    <div class="container">
+    <div class="hover-area"></div>
+    <div id="navbar" class="navbar">
+        <ul>
+            <li class="menu-item1">
+                <img src="shiptracking.png" alt="ship tracking" class="menu-icon1">
+                <span class="menu-text1">Ship Tracking</span>
+            </li>
+            <p>&nbsp;&nbsp;</p>
+            <li class="filter-item">
+                <a href="#" id="filter-btn" onclick="toggleFilter()">
+                    <img src="filter kapal.png" alt="Type" class="menu-icon">
+                    <span class="menu-text">Filters</span>
+                </a>
+                <div id="dropdown-filter" class="dropdown-filter">
+                    <label for="shipType">Jenis Kapal:</label>
+                    <select id="shipType">
+                        <option value="">Semua</option>
+                        <option value="Cargo Ship">Kargo</option>
+                        <option value="Tanker">Tanker</option>
+                        <option value="Passenger Ship">Penumpang</option>
+                        <option value="Fishing Vessel">Ikan</option>
+                    </select>
+                    <label for="shipOwner">Pemilik Kapal:</label>
+                    <select id="shipOwner">
+                        <option value="">Semua</option>
+                        <option value="Ship">Kapal Global</option>
+                        <option value="Coastal Station">Stasiun Pesisir</option>
+                        <option value="Group of shipsSAR — Search and Rescue Aircraft">SAR Udara</option>
+                        <option value="Diver's radio">Radio Penyelam</option>
+                        <option value="Aids to navigation">Navigasi</option>
+                        <option value="Auxiliary craft associated with parent ship">Kapal Pendukung</option>
+                        <option value="AIS SART — Search and Rescue Transmitter">AIS SART</option>
+                        <option value="MOB — Man Overboard Device">Perangkat MOB</option>
+                        <option value="EPIRB — Emergency Position Indicating Radio Beacon">Beacon Darurat</option>
+                    </select>                    
+                    <label for="shipSpeed">Kecepatan (Knots):</label>
+                    <input type="number" id="shipSpeed" placeholder="Masukkan kecepatan" min="0">
+                    <label for="shipStatus">Status:</label>
+                    <select id="shipStatus">
+                        <option value="">Semua</option>
+                        <option value="berlayar">Berlayar</option>
+                        <option value="berlabuh">Berlabuh</option>
+                    </select>
+                    <label for="shipCountry">Negara Asal:</label>
+                    <input type="text" id="shipCountry" placeholder="Masukkan negara asal">
+                    <button onclick="applyFilter()">Cari</button>
+                </div>
+            </li>    
+            <li class="filter-item">
+                <a href="#" id="weather-btn" onclick="toggleWeather()">                    
+                    <img src="cuaca.png" alt="Weather" class="menu-icon">
+                <span class="menu-text">Weather</span>
+            </a>
+            <div id="weather-legends" class="weather-legend">
+                <h4>Weather Layers</h4>
+                <label><input type="radio" name="weatherLayer" id="noneLayer" value="none" checked> None</label>                    
+                <label><input type="radio" name="weatherLayer" id="windLayer" value="wind"> Wind</label>
+                <label><input type="radio" name="weatherLayer" id="tempLayer" value="temperature"> Temperature</label>
+                <label><input type="radio" name="weatherLayer" id="rainLayer" value="rain"> Precipitation</label>
+                <div id="weather-legend-description" class="weather-legend-description">
+                    <h4>Color Scale</h4>
+                    <p><strong>Wind:</strong></p>
+                    <div class="color-scale">
+                        <span>Weak</span>
+                        <div class="color-bar wind"></div>
+                        <span>Strong</span>
+                    </div>          
+                    <p><strong>Temperature:</strong></p>
+                    <div class="color-scale">
+                        <span>Cold</span>
+                        <div class="color-bar temperature"></div>
+                        <span>Hot</span>
+                    </div>           
+                    <p><strong>Precipitation:</strong></p>
+                    <div class="color-scale">
+                        <span>Light</span>
+                        <div class="color-bar rain"></div>
+                        <span>Heavy</span>
+                    </div>
+                </div>
+            </div>                                     
+        </li>
+        <li>
+            <a href="#" id="distance-btn" onclick="toggleDistanceMeasure()">
+              <img src="ukur.png" alt="Measure Distance" class="menu-icon">
+              <span class="menu-text">Measure Distance</span>
+            </a>
+        </li>
+        </ul>
+    </div>
+    </div>
+    <!-- Search and Vessel Filter Containers -->
+    <div class="search-container">
+        <input type="text" id="search-bar" placeholder="Search vessels...">
+        <button id="search-btn">Search</button>
+    </div>
+    <div id="map"></div>
+    <script src="leaflet.js"></script>
+    <script src="weather.js"></script>
+    <script src="leafletdraw.js"></script>
+    <script src="leaflet.rotatedMarker.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

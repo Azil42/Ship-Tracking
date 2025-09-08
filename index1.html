@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ship Tracking</title>
+    <link rel="stylesheet" href="style1.css">
+    <link rel="stylesheet" href="leaflet.css">
+    <link rel="stylesheet" href="leafletdraw.css">
+    <link rel="stylesheet" href="select2.css">
+</head>
+<body>
+    <div class="container">
+    <div class="hover-area"></div>
+    <div id="navbar" class="navbar">
+        <ul>
+            <li class="menu-item1">
+                <img src="shiptracking.png" alt="ship tracking" class="menu-icon1">
+                <span class="menu-text1">Ship Tracking</span>
+            </li>
+            <li class="filter-item">
+                <a href="#" id="filter-btn" onclick="toggleFilter()">
+                    <img src="filter kapal.png" alt="Type" class="menu-icon">
+                    <span class="menu-text">Filters</span>
+                </a>
+                <div id="dropdown-filter" class="dropdown-filter">
+                    <label for="shipGroup">Ship Types:</label>
+                    <select id="shipGroup" class="icon-select">
+                    <option value="">All</option>
+                    <optgroup label="Global Ships">
+                        <option value="Ship|Cargo Ship" data-icon="cargo.svg">Cargo</option>
+                        <option value="Ship|Tanker" data-icon="tanker.svg">Tanker</option>
+                        <option value="Ship|Passenger Ship" data-icon="passenger.svg">Passenger</option>
+                        <option value="Ship|Fishing Vessel" data-icon="fishing.svg">Fishing</option>
+                        <option value="Ship|Unidentified Ship" data-icon="sna.svg">Unidentified Ship</option>
+                    </optgroup>
+                    <option value="Coastal Station|" data-icon="coastal.svg">Coastal Station</option>
+                    <option value="Group of ships|" data-icon="gos.svg">Group of Ships</option>
+                    <option value="SAR — Search and Rescue Aircraft|" data-icon="SAR.svg">SAR</option>
+                    <option value="Diver's radio|" data-icon="diverradio.svg">Diver's Radio</option>
+                    <option value="Aids to navigation|" data-icon="navigasi.svg">Navigation Aid</option>
+                    <option value="Auxiliary craft associated with parent ship|" data-icon="auxiliary.svg">Auxiliary</option>
+                    <option value="AIS SART — Search and Rescue Transmitter|" data-icon="aissart.svg">AIS SART</option>
+                    <option value="MOB — Man Overboard Device|" data-icon="mob.svg">MOB</option>
+                    <option value="EPIRB — Emergency Position Indicating Radio Beacon|" data-icon="beacon.svg">EPIRB</option>
+                    <option value="Unknown|" data-icon="na.svg">Unknown Owner</option>
+                    </select>                  
+                    <label for="shipStatus">Status:</label>
+                    <select id="shipStatus">
+                        <option value="">All</option>
+                        <option value="berlayar">Sailing</option>
+                        <option value="berlabuh">Anchored</option>
+                    </select>
+                    <label for="shipCountry">Country of Origin:</label>
+                    <input type="text" id="shipCountry" placeholder="Enter country of origin">
+                    <button onclick="applyFilter()">Search</button>
+                </div>
+            </li>    
+            <li class="filter-item">
+                <a href="#" id="weather-btn" onclick="toggleWeather()">                    
+                    <img src="cuaca.png" alt="Weather" class="menu-icon">
+                <span class="menu-text">Weather</span>
+            </a>
+            <div id="weather-legends" class="weather-legend">
+                <h4>Weather Overlays</h4>
+                <label><input type="radio" name="weatherLayer" id="noneLayer" value="none" checked> No Overlay</label>                    
+                <label><input type="radio" name="weatherLayer" id="windLayer" value="wind"> Wind</label>
+                <label><input type="radio" name="weatherLayer" id="tempLayer" value="temperature"> Temperature</label>
+                <label><input type="radio" name="weatherLayer" id="rainLayer" value="rain"> Precipitation</label>
+                <div id="weather-legend-description" class="weather-legend-description">
+                    <h4>Color Scale</h4>
+                    <p><strong>Wind:</strong></p>
+                    <div class="color-scale">
+                        <span>Weak</span>
+                        <div class="color-bar wind"></div>
+                        <span>Strong</span>
+                    </div>          
+                    <p><strong>Temperature:</strong></p>
+                    <div class="color-scale">
+                        <span>Cold</span>
+                        <div class="color-bar temperature"></div>
+                        <span>Hot</span>
+                    </div>           
+                    <p><strong>Precipitation:</strong></p>
+                    <div class="color-scale">
+                        <span>Light</span>
+                        <div class="color-bar rain"></div>
+                        <span>Heavy</span>
+                    </div>
+                </div>
+            </div>                                     
+        </li>
+        <li>
+            <a href="#" id="distance-btn" onclick="toggleDistanceMeasure()">
+              <img src="ukur.png" alt="Measure Distance" class="menu-icon">
+              <span class="menu-text">Measure Distance</span>
+            </a>
+        </li>
+        <li>
+            <a href="Statistik.html" id="stats-btn">
+                <img src="statistik.png" alt="Statistics" class="menu-icon">
+                <span class="menu-text">Ship Stats</span>
+            </a>
+        </li>         
+        </ul>
+    </div>
+    </div>
+    <!-- Search and Vessel Filter Containers -->
+    <div class="search-container">
+        <input type="text" id="search-bar" placeholder="Search vessels...">
+        <button id="search-btn">Search</button>
+    </div>
+    <div id="map"></div>
+    <script src="leaflet.js"></script>
+    <script src="weather.js"></script>
+    <script src="leafletdraw.js"></script>
+    <script src="leaflet.rotatedMarker.js"></script>
+    <script src="jQuery.js"></script>
+    <script src="select2.js"></script>
+    <script src="app1.js"></script>
+</body>
+</html>

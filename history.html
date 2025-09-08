@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ship Tracking History</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style1.css">
+  <link rel="stylesheet" href="leaflet.css">
+  <link rel="stylesheet" href="leafletdraw.css">
+  <style>
+    .history-controls {
+      position: absolute;
+      top: 70px;
+      right: 10px;
+      z-index: 1000;
+      background: white;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+    .timeline-container {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      background: white;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      width: 80%;
+      max-width: 600px;
+    }
+    .timeline {
+      display: flex;
+      overflow-x: auto;
+      padding: 10px 0;
+    }
+    .timeline-point {
+      flex: 0 0 auto;
+      width: 100px;
+      margin: 0 5px;
+      padding: 5px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      cursor: pointer;
+      text-align: center;
+    }
+    .timeline-point.active {
+      background-color: #ff009d;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="hover-area"></div>
+    <div id="navbar" class="navbar">
+      <ul>
+        <li class="menu-item1">
+          <img src="shiptracking.png" alt="ship tracking" class="menu-icon1">
+          <span class="menu-text1">Ship Tracking</span>
+        </li>
+        <li>
+          <a href="index1.html">
+            <img src="home.png" alt="Home" class="menu-icon">
+            <span class="menu-text">Back</span>
+          </a>
+        </li>
+        <li class="filter-item">
+            <a href="#" id="weather-btn" onclick="toggleWeather()">                    
+                <img src="cuaca.png" alt="Weather" class="menu-icon">
+            <span class="menu-text">Weather</span>
+        </a>
+        <div id="weather-legends" class="weather-legend">
+            <h4>Weather Layers</h4>
+            <label><input type="radio" name="weatherLayer" id="noneLayer" value="none" checked> None</label>                    
+            <label><input type="radio" name="weatherLayer" id="windLayer" value="wind"> Wind</label>
+            <label><input type="radio" name="weatherLayer" id="tempLayer" value="temperature"> Temperature</label>
+            <label><input type="radio" name="weatherLayer" id="rainLayer" value="rain"> Precipitation</label>
+            <div id="weather-legend-description" class="weather-legend-description">
+                <h4>Color Scale</h4>
+                <p><strong>Wind:</strong></p>
+                <div class="color-scale">
+                    <span>Weak</span>
+                    <div class="color-bar wind"></div>
+                    <span>Strong</span>
+                </div>          
+                <p><strong>Temperature:</strong></p>
+                <div class="color-scale">
+                    <span>Cold</span>
+                    <div class="color-bar temperature"></div>
+                    <span>Hot</span>
+                </div>           
+                <p><strong>Precipitation:</strong></p>
+                <div class="color-scale">
+                    <span>Light</span>
+                    <div class="color-bar rain"></div>
+                    <span>Heavy</span>
+                </div>
+            </div>
+        </div>                                     
+    </li>
+    <li>
+        <a href="#" id="distance-btn" onclick="toggleDistanceMeasure()">
+          <img src="ukur.png" alt="Measure Distance" class="menu-icon">
+          <span class="menu-text">Measure Distance</span>
+        </a>
+    </li>
+    </ul>
+</div>
+</div>
+
+  <div id="map" style="height: 100vh;"></div>
+  
+  <div class="history-controls">
+    <button id="play-history">Play History</button>
+    <button id="pause-history">Pause</button>
+    <input type="range" id="speed-control" min="1" max="10" value="3">
+    <span>Speed: <span id="speed-value">3</span>x</span>
+  </div>
+  
+  <div class="timeline-container">
+    <h3>Ship Timeline</h3>
+    <div class="timeline" id="timeline"></div>
+  </div>
+
+  <script src="leaflet.js"></script>
+  <script src="weather.js"></script>
+  <script src="leafletdraw.js"></script>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const mmsi = urlParams.get("mmsi");
+    
+    // Inisialisasi peta
+    const map = L.map("map").setView([-7.2458, 112.7378], 10);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
+    
+    // Variabel untuk menyimpan data history
+    let historyData = [];
+    let shipMarker;
+    let polyline;
+    let playbackInterval;
+    let currentIndex = 0;
+    let playbackSpeed = 3;
+    
+    // Fungsi untuk memuat data history
+    function loadHistory() {
+      fetch(`history.php?mmsi=${mmsi}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.length > 0) {
+            historyData = data;
+            renderTimeline();
+            drawPath();
+          } else {
+            alert("Data histori tidak ditemukan untuk MMSI ini.");
+          }
+        })
+        .catch(error => {
+          console.error("Gagal mengambil histori:", error);
+          alert("Terjadi kesalahan saat mengambil data.");
+        });
+    }
+    
+    // Fungsi untuk menggambar path history
+    function drawPath() {
+      if (polyline) {
+        map.removeLayer(polyline);
+      }
+      
+      const latlngs = historyData.map(pos => [parseFloat(pos.lat), parseFloat(pos.lon)]);
+      polyline = L.polyline(latlngs, { color: "#ff009d", weight: 3 }).addTo(map);
+      map.fitBounds(polyline.getBounds());
+      
+      // Tambahkan marker posisi pertama
+      updateMarker(0);
+    }
+    
+    // Fungsi untuk memperbarui marker posisi kapal
+    function updateMarker(index) {
+      const point = historyData[index];
+      if (!point) return;
+      
+      if (!shipMarker) {
+        shipMarker = L.marker([point.lat, point.lon], {
+          icon: L.divIcon({
+            className: 'ship-marker',
+            html: '<div style="background-color: #ff009d; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white;"></div>',
+            iconSize: [20, 20]
+          })
+        }).addTo(map);
+      } else {
+        shipMarker.setLatLng([point.lat, point.lon]);
+      }
+      
+      // Update timeline highlight
+      document.querySelectorAll('.timeline-point').forEach((el, i) => {
+        el.classList.toggle('active', i === index);
+      });
+      
+      // Update popup
+      shipMarker.bindPopup(`
+        <strong>MMSI:</strong> ${mmsi}<br>
+        <strong>Position:</strong> ${point.lat.toFixed(4)}, ${point.lon.toFixed(4)}<br>
+        <strong>Time:</strong> ${point.waktu}<br>
+        <strong>Point:</strong> ${index + 1} of ${historyData.length}
+      `).openPopup();
+    }
+    
+    // Fungsi untuk merender timeline
+    function renderTimeline() {
+      const timeline = document.getElementById('timeline');
+      timeline.innerHTML = '';
+      
+      historyData.forEach((point, index) => {
+        const pointElement = document.createElement('div');
+        pointElement.className = 'timeline-point';
+        pointElement.textContent = new Date(point.waktu).toLocaleTimeString();
+        pointElement.addEventListener('click', () => {
+          currentIndex = index;
+          updateMarker(currentIndex);
+        });
+        timeline.appendChild(pointElement);
+      });
+    }
+    
+    // Fungsi untuk memulai playback history
+    function startPlayback() {
+      if (playbackInterval) clearInterval(playbackInterval);
+      
+      playbackInterval = setInterval(() => {
+        currentIndex++;
+        if (currentIndex >= historyData.length) {
+          currentIndex = 0;
+        }
+        updateMarker(currentIndex);
+      }, 1000 / playbackSpeed); // Sesuaikan kecepatan playback
+    }
+    
+    // Fungsi untuk menghentikan playback
+    function stopPlayback() {
+      if (playbackInterval) {
+        clearInterval(playbackInterval);
+        playbackInterval = null;
+      }
+    }
+    
+    // Event listeners untuk kontrol playback
+    document.getElementById('play-history').addEventListener('click', startPlayback);
+    document.getElementById('pause-history').addEventListener('click', stopPlayback);
+    document.getElementById('speed-control').addEventListener('input', (e) => {
+      playbackSpeed = parseInt(e.target.value);
+      document.getElementById('speed-value').textContent = playbackSpeed;
+      if (playbackInterval) {
+        startPlayback(); // Restart playback dengan kecepatan baru
+      }
+    });
+
+// Weather layer functionality
+function closeAllDropdowns(exceptId) {
+    const dropdowns = document.querySelectorAll('.weather-legend');
+    dropdowns.forEach(dropdown => {
+        if (dropdown.id !== exceptId) {
+            dropdown.style.display = 'none';
+        }
+    });
+}
+
+var apiKey = 'ea5a726a363c40c1efdadacc743c32d7';
+var windLayer = L.OWM.wind({ appId: apiKey, showLegend: false });
+var tempLayer = L.OWM.temperature({ appId: apiKey, showLegend: false });
+var rainLayer = L.OWM.precipitation({ appId: apiKey, showLegend: false });
+
+function removeAllWeatherLayers() {
+    map.removeLayer(windLayer);
+    map.removeLayer(tempLayer);
+    map.removeLayer(rainLayer);
+}
+
+document.querySelectorAll('input[name="weatherLayer"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        removeAllWeatherLayers();
+        switch (this.value) {
+            case 'wind': map.addLayer(windLayer); break;
+            case 'temperature': map.addLayer(tempLayer); break;
+            case 'rain': map.addLayer(rainLayer); break;
+        }
+    });
+});
+
+function toggleWeather() {
+    closeAllDropdowns('weather-legends');
+    const dropdown = document.getElementById('weather-legends');
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+}
+
+// Distance measurement functionality
+var drawnItems = new L.FeatureGroup();
+map.addLayer(drawnItems);
+
+var distanceMeasureActive = false;
+var distanceControl = new L.Draw.Polyline(map, {
+    shapeOptions: {
+        color: 'blue',
+        weight: 3
+    },
+    metric: true
+});
+
+map.on(L.Draw.Event.CREATED, function(e) {
+    var layer = e.layer;
+    drawnItems.addLayer(layer);
+    
+    var latlngs = layer.getLatLngs();
+    var distance = 0;
+    
+    for (var i = 0; i < latlngs.length - 1; i++) {
+        distance += latlngs[i].distanceTo(latlngs[i + 1]);
+    }
+    
+    alert("Total distance: " + (distance / 1000).toFixed(2) + " km");
+});
+
+function toggleDistanceMeasure() {
+    if (!distanceMeasureActive) {
+        distanceControl.enable();
+        distanceMeasureActive = true;
+    } else {
+        distanceControl.disable();
+        distanceMeasureActive = false;
+        drawnItems.clearLayers();
+    }
+}
+    
+    // Muat data history saat halaman dimuat
+    window.addEventListener('load', loadHistory);
+  </script>
+</body>
+</html>
